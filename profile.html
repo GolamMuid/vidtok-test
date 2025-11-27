@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="info"></div>
+
+    <script>
+      async function loadUser() {
+        try {
+          const res = await fetch("/.auth/me", { credentials: "include" });
+          const data = await res.json();
+
+          if (!data.length) {
+            console.log("User not logged in");
+            return;
+          }
+
+          const user = data[0];
+
+          console.log("User data:", user);
+
+          // Extract GitHub info
+          const githubId = user.user_claims.find(
+            (c) => c.typ === "urn:github:id"
+          )?.val;
+          const name = user.user_claims.find((c) => c.typ === "name")?.val;
+          const username = user.user_claims.find(
+            (c) => c.typ === "preferred_username"
+          )?.val;
+
+          document.getElementById("info").innerHTML = `
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Username:</strong> ${username}</p>
+      <p><strong>GitHub ID:</strong> ${githubId}</p>
+    `;
+        } catch (err) {
+          console.error("Error fetching user info:", err);
+        }
+      }
+
+      loadUser();
+    </script>
+  </body>
+</html>
