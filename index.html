@@ -24,9 +24,51 @@
     </div>
     <div class="container p-4 mx-auto">
       <div id="video-list" class="flex flex-wrap gap-4"></div>
-      <!-- </div> -->
-
-      <script src="js/index.js"></script>
     </div>
+
+    <script src="js/index.js"></script>
+    <script>
+      async function loadUser() {
+        try {
+          const res = await fetch("/.auth/me", { credentials: "include" });
+          const data = await res.json();
+
+          // Not logged in
+          if (!data.length) {
+            console.log("User not logged in");
+            return;
+          }
+
+          const user = data[0];
+
+          // Extract claims
+          const githubId = user.user_claims.find(
+            (c) => c.typ === "urn:github:id"
+          )?.val;
+          const name = user.user_id;
+          // const name = user.user_claims.find((c) => c.typ === "name")?.val;
+          const username = user.user_claims.find(
+            (c) => c.typ === "preferred_username"
+          )?.val;
+
+          // Create object for storing
+          const userInfo = {
+            githubId,
+            name,
+            username,
+            userId: user.user_id, // Azure user id (e.g. github|123456)
+          };
+
+          // Save to localStorage
+          localStorage.setItem("userInfo", JSON.stringify(userInfo));
+
+          console.log("Saved to localStorage:", userInfo);
+        } catch (err) {
+          console.error("Error:", err);
+        }
+      }
+
+      loadUser();
+    </script>
   </body>
 </html>

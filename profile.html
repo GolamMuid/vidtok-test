@@ -27,7 +27,8 @@
           const githubId = user.user_claims.find(
             (c) => c.typ === "urn:github:id"
           )?.val;
-          const name = user.user_claims.find((c) => c.typ === "name")?.val;
+          //   const name = user.user_claims.find((c) => c.typ === "name")?.val;
+          const name = user.user_id;
           const username = user.user_claims.find(
             (c) => c.typ === "preferred_username"
           )?.val;
