@@ -27,10 +27,10 @@ function createVideoCard(video) {
   };
 
   card.innerHTML = `
-    <div class="w-full h-40 overflow-hidden rounded-lg">
+    <div class="w-60 h-40 overflow-hidden rounded-lg bg-gray-200  mx-auto">
       <img src="${video.thumbnail}" 
            alt="${video.title}" 
-           class="w-full h-full object-cover">
+           class="w-full h-full object-contain">
     </div>
 
     <div class="mt-3">

@@ -3,10 +3,81 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <title>Profile</title>
   </head>
   <body>
+    <div class="flex justify-between px-12 py-4 shadow-lg">
+      <div>
+        <image
+          src="/assets/vidtok.png"
+          alt="logo"
+          height="{256}"
+          width="{256}"
+          class="h-16 w-auto"
+        />
+      </div>
+      <div class="flex justify-between items-center gap-8">
+        <a href="/" class="hover:font-bold"> Home </a>
+        <a href="/" class="hover:font-bold"> My Videos </a>
+        <a href="/profile.html" class="hover:font-bold"> Profile </a>
+      </div>
+    </div>
     <div id="info"></div>
+
+    <div class="container mx-auto mt-8">
+      <p class="font-bold text-xl">Upload a new video</p>
+    </div>
+
+    <div class="container mx-auto mt-4">
+      <form id="videoUploadForm" class="space-y-4 border p-6 rounded-lg shadow">
+        <div>
+          <label class="block font-semibold"
+            >Video Title <span class="text-red-400"> * </span></label
+          >
+          <input
+            type="text"
+            name="title"
+            required
+            class="w-full border rounded p-2"
+            placeholder="Enter video title"
+          />
+        </div>
+
+        <div>
+          <label class="block font-semibold">Video Description</label>
+          <textarea
+            name="description"
+            class="w-full border rounded p-2"
+            rows="4"
+            placeholder="Enter video description"
+          ></textarea>
+        </div>
+
+        <div>
+          <label class="block font-semibold"
+            >Choose Video File <span class="text-red-400"> * </span>
+          </label>
+          <input
+            type="file"
+            name="video"
+            accept="video/*"
+            required
+            class="w-full border"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Upload Video
+        </button>
+      </form>
+
+      <p id="uploadMessage" class="mt-4 font-semibold"></p>
+    </div>
 
     <script>
       async function loadUser() {

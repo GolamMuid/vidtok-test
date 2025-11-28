@@ -6,7 +6,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
   <body>
-    <div class="flex justify-between px-12 py-4 shadow-2xl">
+    <div class="flex justify-between px-12 py-4 shadow-lg">
       <div>
         <image
           src="/assets/vidtok.png"
@@ -18,12 +18,15 @@
       </div>
       <div class="flex justify-between items-center gap-8">
         <a href="/" class="hover:font-bold"> Home </a>
-        <a href="/profile.html" class="hover:font-bold"> My Videos </a>
-        <a href="/" class="hover:font-bold"> Profile </a>
+        <a href="/" class="hover:font-bold"> My Videos </a>
+        <a href="/profile.html" class="hover:font-bold"> Profile </a>
       </div>
     </div>
     <div class="container p-4 mx-auto">
-      <div id="video-list" class="flex flex-wrap gap-4"></div>
+      <div
+        id="video-list"
+        class="grid grid-cols-2 gap-4 mt-4 lg:grid-cols-3 xl:grid-cols-4"
+      ></div>
     </div>
 
     <script src="js/index.js"></script>
