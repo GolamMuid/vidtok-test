@@ -12,7 +12,7 @@ fetch(
         id: v.id,
         title: v.title,
         thumbnail: v.thumbnailUrl,
-        createdAt: "2024-01-01", // or generate date from API if available
+        userName: v.userName,
       };
 
       container.appendChild(createVideoCard(videoObj));
@@ -21,6 +21,7 @@ fetch(
 
 function createVideoCard(video) {
   const card = document.createElement("div");
+  console.log("video", video);
 
   card.className =
     "cursor-pointer bg-white rounded-lg shadow hover:shadow-lg transition p-2";
@@ -41,7 +42,8 @@ function createVideoCard(video) {
         ${video.title}
       </h3>
       <p class="text-sm text-gray-500 mt-1">
-        📅 ${new Date(video.createdAt || Date.now()).toLocaleDateString()}
+        
+        ${video.userName}
       </p>
     </div>
   `;
