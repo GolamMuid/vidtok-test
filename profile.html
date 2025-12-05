@@ -103,17 +103,21 @@
 
           if (data.length) {
             const user = data[0];
+            console.log("user", user);
             const githubId = user.user_claims.find(
               (c) => c.typ === "urn:github:id"
             )?.val;
+            console.log("githubId", githubId);
             const githubUsername = user.user_claims.find(
               (c) => c.typ === "preferred_username"
             )?.val;
+            console.log("githubUsername", githubUsername);
 
             currentUser = {
               userId: githubId || "001",
               userName: githubUsername || "John Doe",
             };
+            console.log(currentUser);
           }
 
           document.getElementById("info").innerHTML = `
