@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body>
+    <div class="flex justify-between px-12 py-4 shadow-lg">
+      <div>
+        <image
+          src="/assets/vidtok.png"
+          alt="logo"
+          height="{256}"
+          width="{256}"
+          class="h-16 w-auto"
+        />
+      </div>
+      <div class="flex justify-between items-center gap-8">
+        <a href="/" class="hover:font-bold"> Home </a>
+        <a href="/my-videos.html" class="font-bold"> My Videos </a>
+        <a href="/profile.html" class="hover:font-bold"> Profile </a>
+      </div>
+    </div>
+    <div class="container p-4 mx-auto">
+      <div
+        id="video-list"
+        class="grid grid-cols-2 gap-4 mt-4 lg:grid-cols-3 xl:grid-cols-4"
+      ></div>
+    </div>
+
+    <script>
+      async function loadUser() {
+        try {
+          const res = await fetch("/.auth/me", { credentials: "include" });
+          const data = await res.json();
+
+          let userId = "001"; // default
+          if (data.length) {
+            const user = data[0];
+            const githubId = user.user_claims.find(
+              (c) => c.typ === "urn:github:id"
+            )?.val;
+            userId = githubId || "001";
+          }
+
+          console.log("Fetching videos for userId:", userId);
+          await loadUserVideos(userId);
+        } catch (err) {
+          console.error("Error fetching user info:", err);
+          // fallback
+          await loadUserVideos("001");
+        }
+      }
+
+      async function loadUserVideos(userId) {
+        try {
+          const res = await fetch(
+            `https://vidtokbackendnode-afe6c0f5hwa2dagv.spaincentral-01.azurewebsites.net/user-videos/${userId}`
+          );
+
+          if (!res.ok) throw new Error("Failed to fetch user videos");
+
+          const { videos } = await res.json();
+
+          const videoList = document.getElementById("video-list");
+
+          if (!videos || videos.length === 0) {
+            videoList.innerHTML = `<p class="col-span-full text-center text-gray-500">No videos uploaded yet.</p>`;
+            return;
+          }
+
+          videoList.innerHTML = videos
+            .map(
+              (v) => `
+        <div class="bg-gray-50 rounded-lg shadow overflow-hidden">
+          <a href="/watch.html?id=${v.id}">
+            <img src="${v.thumbnailUrl}" alt="${v.title}" class="w-full h-48 object-cover" />
+          </a>
+          <div class="p-2">
+            <p class="font-semibold text-sm">${v.title}</p>
+          </div>
+        </div>
+      `
+            )
+            .join("");
+        } catch (err) {
+          console.error("Error fetching user videos:", err);
+        }
+      }
+
+      loadUser();
+    </script>
+  </body>
+</html>

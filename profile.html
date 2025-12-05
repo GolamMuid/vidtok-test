@@ -20,13 +20,13 @@
       </div>
       <div class="flex justify-between items-center gap-8">
         <a href="/" class="hover:font-bold"> Home </a>
-        <a href="/" class="hover:font-bold"> My Videos </a>
-        <a href="/profile.html" class="hover:font-bold"> Profile </a>
+        <a href="/my-videos.html" class="hover:font-bold"> My Videos </a>
+        <a href="/profile.html" class="font-bold"> Profile </a>
       </div>
     </div>
-    <div id="info"></div>
 
     <div class="container mx-auto mt-8">
+      <div id="info"></div>
       <p class="font-bold text-xl">Upload a new video</p>
     </div>
 
@@ -57,6 +57,19 @@
 
         <div>
           <label class="block font-semibold"
+            >Choose Thumbnail <span class="text-red-400"> * </span>
+          </label>
+          <input
+            type="file"
+            name="thumbnail"
+            accept="image/*"
+            required
+            class="w-full border"
+          />
+        </div>
+
+        <div>
+          <label class="block font-semibold"
             >Choose Video File <span class="text-red-400"> * </span>
           </label>
           <input
@@ -80,41 +93,76 @@
     </div>
 
     <script>
+      let currentUser = { userId: "001", userName: "John Doe" };
+
       async function loadUser() {
         try {
           const res = await fetch("/.auth/me", { credentials: "include" });
           const data = await res.json();
 
-          if (!data.length) {
-            console.log("User not logged in");
-            return;
+          if (data.length) {
+            const user = data[0];
+            const githubId = user.user_claims.find(
+              (c) => c.typ === "urn:github:id"
+            )?.val;
+            const githubUsername = user.user_claims.find(
+              (c) => c.typ === "preferred_username"
+            )?.val;
+
+            currentUser = {
+              userId: githubId || "001",
+              userName: githubUsername || "John Doe",
+            };
           }
 
-          const user = data[0];
-
-          console.log("User data:", user);
-
-          // Extract GitHub info
-          const githubId = user.user_claims.find(
-            (c) => c.typ === "urn:github:id"
-          )?.val;
-          //   const name = user.user_claims.find((c) => c.typ === "name")?.val;
-          const name = user.user_id;
-          const username = user.user_claims.find(
-            (c) => c.typ === "preferred_username"
-          )?.val;
-
           document.getElementById("info").innerHTML = `
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Username:</strong> ${username}</p>
-      <p><strong>GitHub ID:</strong> ${githubId}</p>
-    `;
+        <p><strong>Current User:</strong> ${currentUser.userName}</p>
+      `;
         } catch (err) {
           console.error("Error fetching user info:", err);
         }
       }
 
       loadUser();
+
+      // Handle video upload
+      const videoForm = document.getElementById("videoUploadForm");
+      const uploadMessage = document.getElementById("uploadMessage");
+
+      videoForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(videoForm);
+        // Append user info
+        formData.append("userId", currentUser.userId);
+        formData.append("userName", currentUser.userName);
+
+        try {
+          const res = await fetch(
+            "https://vidtokbackendnode-afe6c0f5hwa2dagv.spaincentral-01.azurewebsites.net/upload",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          if (!res.ok) throw new Error("Upload failed");
+
+          const data = await res.json();
+          console.log("Upload response:", data);
+          uploadMessage.textContent = "Video uploaded successfully!";
+          uploadMessage.classList.remove("text-red-500");
+          uploadMessage.classList.add("text-green-600");
+
+          // Optionally reset form
+          videoForm.reset();
+        } catch (err) {
+          console.error("Error uploading video:", err);
+          uploadMessage.textContent = "Error uploading video";
+          uploadMessage.classList.remove("text-green-600");
+          uploadMessage.classList.add("text-red-500");
+        }
+      });
     </script>
   </body>
 </html>
