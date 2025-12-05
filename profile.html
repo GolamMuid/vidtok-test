@@ -108,9 +108,7 @@
               (c) => c.typ === "urn:github:id"
             )?.val;
             console.log("githubId", githubId);
-            const githubUsername = user.user_claims.find(
-              (c) => c.typ === "preferred_username"
-            )?.val;
+            const githubUsername = user.user_id;
             console.log("githubUsername", githubUsername);
 
             currentUser = {
