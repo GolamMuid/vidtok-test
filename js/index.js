@@ -1,14 +1,17 @@
-fetch("https://dummyjson.com/products?limit=10")
+fetch(
+  "https://vidtokbackendnode-afe6c0f5hwa2dagv.spaincentral-01.azurewebsites.net/videos"
+)
   .then((res) => res.json())
   .then((videos) => {
+    console.log(videos);
     const container = document.getElementById("video-list");
 
-    videos.products.forEach((v) => {
+    videos?.videos.forEach((v) => {
       // DummyJSON thumbnails: v.thumbnail
       const videoObj = {
         id: v.id,
         title: v.title,
-        thumbnail: v.thumbnail,
+        thumbnail: v.thumbnailUrl,
         createdAt: "2024-01-01", // or generate date from API if available
       };
 

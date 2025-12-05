@@ -25,26 +25,142 @@
       </div>
     </div>
 
-    <!-- <script src="js/index.js"></script> -->
+    <div id="content" class="max-w-5xl mx-auto mt-10"></div>
 
     <script>
       // Get ?id=xx from the URL
       const urlParams = new URLSearchParams(window.location.search);
-      const productId = urlParams.get("id");
+      const videoId = urlParams.get("id");
 
-      console.log("Product ID from URL:", productId);
+      console.log("VIDEO ID =", videoId);
 
-      fetch(`https://dummyjson.com/products/${productId}`)
+      fetch(
+        `https://vidtokbackendnode-afe6c0f5hwa2dagv.spaincentral-01.azurewebsites.net/video-details/${videoId}`
+      )
         .then((res) => res.json())
-        .then((data) => {
-          console.log("Product details:", data);
+        .then((data) => renderPage(data))
+        .catch((err) => console.error("Error loading video:", err));
 
-          document.getElementById("video-details").innerHTML = `
-      <h2>${data.title}</h2>
-      <p>${data.description}</p>
-      <img src="${data.thumbnail}" width="200" />
-    `;
-        });
+      function renderPage(data) {
+        const { video, comments } = data;
+        console.log(data);
+
+        if (!video) {
+          document.getElementById("content").innerHTML =
+            "<p class='text-red-600 text-xl'>Video not found</p>";
+          return;
+        }
+
+        document.getElementById("content").innerHTML = `
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <!-- Video Player -->
+          <video 
+            src="${video.videoUrl}"
+            controls
+            class="w-full rounded-lg mb-4"
+          ></video>
+
+          <!-- Title -->
+          <h1 class="text-3xl font-bold mb-2">${video.title}</h1>
+
+          <!-- Description -->
+          <p class="text-gray-700 mb-6">${video.description}</p>
+
+          <!-- Comments Section -->
+          <h2 class="text-2xl font-semibold mb-4">Comments (${
+            comments.length
+          })</h2>
+
+          <div id="commentList" class="space-y-4">
+  ${comments
+    .map(
+      (c, index) => `
+      <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+        <p>
+          <strong>${c.userName}</strong>
+          <span class="text-sm ${
+            c.sentiment === "negative" ? "text-red-500" : "text-gray-500"
+          }">(${c.sentiment})</span>
+        </p>
+
+        <p 
+          class="${
+            c.sentiment === "negative"
+              ? "blur-sm cursor-pointer select-none"
+              : ""
+          }" 
+          id="comment-${index}"
+          onclick="unblurComment(${index}, '${c.sentiment}')"
+        >
+          ${c.comment}
+        </p>
+      </div>
+    `
+    )
+    .join("")}
+</div>
+
+
+          <!-- Add New Comment -->
+          <div class="mt-8">
+            <h3 class="text-xl font-semibold mb-2">Add a Comment</h3>
+
+            <input id="userName" 
+              class="w-full p-2 border rounded mb-2" 
+              placeholder="Your name"
+            />
+
+            <textarea id="commentText"
+              class="w-full p-2 border rounded mb-2"
+              placeholder="Write a comment..."
+            ></textarea>
+
+            <button
+              onclick="submitComment()"
+              class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Post Comment
+            </button>
+          </div>
+        </div>
+      `;
+      }
+
+      function unblurComment(index, sentiment) {
+        if (sentiment !== "negative") return; // Only unblur negative comments
+
+        const el = document.getElementById(`comment-${index}`);
+        el.classList.remove("blur-sm", "cursor-pointer", "select-none");
+      }
+
+      function submitComment() {
+        const userName = document.getElementById("userName").value;
+        const commentText = document.getElementById("commentText").value;
+
+        if (!userName || !commentText) {
+          alert("Please enter both name and comment.");
+          return;
+        }
+
+        fetch(
+          `https://vidtokbackendnode-afe6c0f5hwa2dagv.spaincentral-01.azurewebsites.net/comments/${videoId}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userName: userName,
+              userId: "TEMP-USER", // use your real user
+              comment: commentText,
+            }),
+          }
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            alert("Comment added!");
+            location.reload();
+          })
+          .catch((err) => console.error("Error posting comment:", err));
+      }
     </script>
   </body>
 </html>
