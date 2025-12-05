@@ -99,6 +99,7 @@
         try {
           const res = await fetch("/.auth/me", { credentials: "include" });
           const data = await res.json();
+          console.log(data);
 
           if (data.length) {
             const user = data[0];
